@@ -39,6 +39,21 @@ plt.show()
 
 conn.close()
 
+############################# Porcentaje del total del número de alertas por categoría
+conn = sqlite3.connect('Practica1.db')
+query = "SELECT clasification, COUNT(*) as total FROM alertas GROUP BY clasification"
+df = pd.read_sql_query(query, conn)
+
+df['percentage'] = df['total'] / df['total'].sum() * 100
+
+plt.figure(figsize=(8, 8))
+plt.pie(df['percentage'], labels=df['clasification'], autopct='%1.1f%%')
+plt.title('Porcentaje del total de alertas por categoría')
+plt.axis('equal')
+plt.show()
+
+conn.close()
+
 ######################## Dispositios más vulnerables:
 conn = sqlite3.connect('Practica1.db')
 cursor = conn.cursor()

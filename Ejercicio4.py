@@ -13,6 +13,7 @@ con.close()
 ips = [result[0] for result in results]
 counts = [result[1] for result in results]
 
+plt.figure(figsize=(15, 6))
 plt.bar(ips, counts)
 plt.xlabel('IPs de origen')
 plt.ylabel('Número de incidencias')
@@ -31,7 +32,7 @@ df['count'] = 1
 
 alerts_per_day = df.groupby(df['timestamp'].dt.date)['count'].sum()
 
-alerts_per_day.plot(kind='bar', figsize=(10, 6))
+alerts_per_day.plot(kind='bar', figsize=(10, 12))
 plt.xlabel('Fecha')
 plt.ylabel('Número de alertas')
 plt.title('Número de alertas en el tiempo (por día)')
@@ -46,7 +47,7 @@ df = pd.read_sql_query(query, conn)
 
 df['percentage'] = df['total'] / df['total'].sum() * 100
 
-plt.figure(figsize=(8, 8))
+plt.figure(figsize=(15, 15))
 plt.pie(df['percentage'], labels=df['clasification'], autopct='%1.1f%%')
 plt.title('Porcentaje del total de alertas por categoría')
 plt.axis('equal')
@@ -54,11 +55,11 @@ plt.show()
 
 conn.close()
 
-######################## Dispositios más vulnerables:
+######################## Dispositivos más vulnerables:
 conn = sqlite3.connect('Practica1.db')
 cursor = conn.cursor()
 
-query = "SELECT origin, COUNT(*) AS total FROM alertas GROUP BY origin ORDER BY total DESC"
+query = "SELECT origin, COUNT(*) as total FROM alertas GROUP BY origin ORDER BY total DESC"
 
 cursor.execute(query)
 results = cursor.fetchall()
@@ -69,6 +70,7 @@ num_devices = 10
 x_labels = [result[0] for result in results[:num_devices]]
 y_values = [result[1] for result in results[:num_devices]]
 
+plt.figure(figsize=(15, 6))
 plt.bar(x_labels, y_values)
 plt.title(f"Top {num_devices} dispositivos más vulnerables")
 plt.xlabel("Dispositivo")
@@ -98,7 +100,7 @@ for row in results:
     total_services.append(count)
     insecure_services.append(0)
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(8, 22))
 ax.bar(clasifications, avg_ports, label='Media de puertos abiertos')
 ax.plot(clasifications, total_services, label='Total de servicios detectados', color='red')
 ax.plot(clasifications, insecure_services, label='Servicios inseguros', color='orange')

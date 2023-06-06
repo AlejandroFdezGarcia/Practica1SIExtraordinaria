@@ -58,7 +58,7 @@ conn.close()
 conn = sqlite3.connect('Practica1.db')
 cursor = conn.cursor()
 
-query = """SELECT origin, COUNT(*) AS total FROM alertas GROUP BY origin ORDER BY total DESC"""
+query = "SELECT origin, COUNT(*) AS total FROM alertas GROUP BY origin ORDER BY total DESC"
 
 cursor.execute(query)
 results = cursor.fetchall()
@@ -80,7 +80,7 @@ plt.show()
 ##################################### Media de puertos abiertos:
 conn = sqlite3.connect('Practica1.db')
 
-query = '''SELECT clasification, AVG(port) as avg_port, COUNT(*) as count FROM alertas GROUP BY clasification'''
+query = "SELECT clasification, AVG(port) as avg_port, COUNT(*) as count FROM alertas GROUP BY clasification"
 
 cursor = conn.cursor()
 cursor.execute(query)

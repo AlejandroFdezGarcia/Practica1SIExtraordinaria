@@ -99,16 +99,46 @@ print("La moda de la prioridad de todas las alertas es", modaTot)
 
 #Mediana
 print("\n")
-mediana1 = (dAlertsJul1["sid"].count()+dAlertsAgo1["sid"].count()+1)/2
-mediana2 = (dAlertsJul2["sid"].count()+dAlertsAgo2["sid"].count()+1)/2
-mediana3 = (dAlertsJul3["sid"].count()+dAlertsAgo3["sid"].count()+1)/2
-medianaJulio = (dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()+dAlertsJul3["sid"].count()+1)/2
-medianaAgosto = (dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()+dAlertsAgo3["sid"].count()+1)/2
-medianaTot = (dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()+dAlertsJul3["sid"].count()+dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()+dAlertsAgo3["sid"].count()+1)/2
+Alertas1 = (dAlertsJul1["sid"].count()+dAlertsAgo1["sid"].count())
+Alertas2 = (dAlertsJul2["sid"].count()+dAlertsAgo2["sid"].count())
+Alertas3 = (dAlertsJul3["sid"].count()+dAlertsAgo3["sid"].count())
+AlertasJulio = dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()+dAlertsJul3["sid"].count()
+AlertasAgosto = dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()+dAlertsAgo3["sid"].count()
+AlertasTot = Alertas1+Alertas2+Alertas3
 
-print("La mediana de las alertas de prioridad 1 es la alerta número", mediana1)
-print("La mediana de las alertas de prioridad 2 es la alerta número", mediana2)
-print("La mediana de las alertas de prioridad 3 es la alerta número", mediana3)
+if dAlertsJul1["sid"].count() >= ((AlertasJulio+1)/2):
+    medianaJulio = 1
+elif ((AlertasJulio+1)/2)-dAlertsJul1["sid"].count() == 0.5:
+    medianaJulio = 1.5
+elif dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count() >= ((AlertasJulio+1)/2):
+    medianaJulio = 2
+elif ((AlertasJulio+1)/2)-(dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()) == 0.5:
+    medianaJulio = 2.5
+else:
+    medianaJulio = 3
+
+if dAlertsAgo1["sid"].count() >= ((AlertasAgosto+1)/2):
+    medianaAgosto = 1
+elif ((AlertasAgosto+1)/2)-dAlertsAgo1["sid"].count() == 0.5:
+    medianaAgosto = 1.5
+elif dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count() >= ((AlertasAgosto+1)/2):
+    medianaAgosto = 2
+elif ((AlertasAgosto+1)/2)-(dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()) == 0.5:
+    medianaAgosto = 2.5
+else:
+    medianaAgosto = 3
+
+if Alertas1 >= ((AlertasTot+1)/2):
+    medianaTot = 1
+elif ((AlertasTot+1)/2)-Alertas1 == 0.5:
+    medianaTot = 1.5
+elif Alertas1+Alertas2 >= ((AlertasTot+1)/2):
+    medianaTot = 2
+elif ((AlertasTot+1)/2)-(Alertas1+Alertas2) == 0.5:
+    medianaTot = 2.5
+else:
+    medianaTot = 3
+
 print("La mediana de las alertas del mes de julio es la alerta de número", medianaJulio)
 print("La mediana de las alertas del mes de agosto es la alerta de número", medianaAgosto)
 print("La mediana de todas las alertas es la alerta número", medianaTot)

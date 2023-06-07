@@ -4,14 +4,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 con = sqlite3.connect('Practica1.db')
-cur = con.cursor()
-cur.execute("SELECT origin, COUNT(*) FROM alertas WHERE priority = 1 GROUP BY origin ORDER BY COUNT(*) DESC LIMIT 10")
+query = "SELECT origin, COUNT(*) as count FROM alertas WHERE priority = 1 GROUP BY origin ORDER BY count DESC LIMIT 10"
+df = pd.read_sql_query(query, con)
 
-results = cur.fetchall()
 con.close()
 
-ips = [result[0] for result in results]
-counts = [result[1] for result in results]
+ips = df['origin']
+counts = df['count']
 
 plt.figure(figsize=(15, 6))
 plt.bar(ips, counts)
@@ -57,18 +56,14 @@ conn.close()
 
 ######################## Dispositivos más vulnerables:
 conn = sqlite3.connect('Practica1.db')
-cursor = conn.cursor()
-
 query = "SELECT origin, COUNT(*) as total FROM alertas GROUP BY origin ORDER BY total DESC"
-
-cursor.execute(query)
-results = cursor.fetchall()
+df = pd.read_sql_query(query, conn)
 
 conn.close()
 
 num_devices = 10
-x_labels = [result[0] for result in results[:num_devices]]
-y_values = [result[1] for result in results[:num_devices]]
+x_labels = df['origin'].head(num_devices)
+y_values = df['total'].head(num_devices)
 
 plt.figure(figsize=(15, 6))
 plt.bar(x_labels, y_values)
@@ -77,28 +72,15 @@ plt.xlabel("Dispositivo")
 plt.ylabel("Número de alertas")
 plt.show()
 
-
-
 ##################################### Media de puertos abiertos:
 conn = sqlite3.connect('Practica1.db')
-
 query = "SELECT clasification, AVG(port) as avg_port, COUNT(*) as count FROM alertas GROUP BY clasification"
+df = pd.read_sql_query(query, conn)
 
-cursor = conn.cursor()
-cursor.execute(query)
-results = cursor.fetchall()
-
-clasifications = []
-avg_ports = []
-total_services = []
-insecure_services = []
-
-for row in results:
-    clasification, avg_port, count = row
-    clasifications.append(clasification)
-    avg_ports.append(avg_port)
-    total_services.append(count)
-    insecure_services.append(0)
+clasifications = df['clasification']
+avg_ports = df['avg_port']
+total_services = df['count']
+insecure_services = pd.Series([0] * len(df))
 
 fig, ax = plt.subplots(figsize=(8, 22))
 ax.bar(clasifications, avg_ports, label='Media de puertos abiertos')
@@ -110,3 +92,5 @@ ax.set_ylabel('Puertos')
 ax.set_title('Media de puertos abiertos por clasificación de vulnerabilidad')
 plt.xticks(rotation=90)
 plt.show()
+
+conn.close()

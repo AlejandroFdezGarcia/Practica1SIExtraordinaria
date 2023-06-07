@@ -146,7 +146,86 @@ print("La mediana de todas las alertas es la alerta número", medianaTot)
 
 #Cuartiles Q1 y Q3
 print("\n")
+Alertas1 = (dAlertsJul1["sid"].count()+dAlertsAgo1["sid"].count())
+Alertas2 = (dAlertsJul2["sid"].count()+dAlertsAgo2["sid"].count())
+Alertas3 = (dAlertsJul3["sid"].count()+dAlertsAgo3["sid"].count())
+AlertasJulio = dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()+dAlertsJul3["sid"].count()
+AlertasAgosto = dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()+dAlertsAgo3["sid"].count()
+AlertasTot = Alertas1+Alertas2+Alertas3
 
+if dAlertsJul1["sid"].count() >= ((AlertasJulio+1)/4):
+    Q1Julio = 1
+elif ((AlertasJulio+1)/4)-dAlertsJul1["sid"].count() == 0.5:
+    Q1Julio = 1.5
+elif dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count() >= ((AlertasJulio+1)/4):
+    Q1Julio = 2
+elif ((AlertasJulio+1)/4)-(dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()) == 0.5:
+    Q1Julio = 2.5
+else:
+    Q1Julio = 3
+
+if dAlertsAgo1["sid"].count() >= ((AlertasAgosto+1)/4):
+    Q1Agosto = 1
+elif ((AlertasAgosto+1)/4)-dAlertsAgo1["sid"].count() == 0.5:
+    Q1Agosto = 1.5
+elif dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count() >= ((AlertasAgosto+1)/4):
+    Q1Agosto = 2
+elif ((AlertasAgosto+1)/4)-(dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()) == 0.5:
+    Q1Agosto = 2.5
+else:
+    Q1Agosto = 3
+
+if Alertas1 >= ((AlertasTot+1)/4):
+    Q1Tot = 1
+elif ((AlertasTot+1)/4)-Alertas1 == 0.5:
+    Q1Tot = 1.5
+elif Alertas1+Alertas2 >= ((AlertasTot+1)/4):
+    Q1Tot = 2
+elif ((AlertasTot+1)/4)-(Alertas1+Alertas2) == 0.5:
+    Q1Tot = 2.5
+else:
+    Q1Tot = 3
+
+print("El cuartil 1 (Q1) de las alertas del mes de julio es la alerta de número", Q1Julio)
+print("El cuartil 1 (Q1) de las alertas del mes de agosto es la alerta de número", Q1Agosto)
+print("El cuartil 1 (Q1) de todas las alertas es la alerta número", Q1Tot)
+
+if dAlertsJul1["sid"].count() >= (((AlertasJulio+1)*3)/4):
+    Q3Julio = 1
+elif (((AlertasJulio+1)*3)/4)-dAlertsJul1["sid"].count() == 0.5:
+    Q3Julio = 1.5
+elif dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count() >= (((AlertasJulio+1)*3)/4):
+    Q3Julio = 2
+elif (((AlertasJulio+1)*3)/4)-(dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()) == 0.5:
+    Q3Julio = 2.5
+else:
+    Q3Julio = 3
+
+if dAlertsAgo1["sid"].count() >= (((AlertasAgosto+1)*3)/4):
+    Q3Agosto = 1
+elif (((AlertasAgosto+1)*3)/4)-dAlertsAgo1["sid"].count() == 0.5:
+    Q3Agosto = 1.5
+elif dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count() >= (((AlertasAgosto+1)*3)/4):
+    Q3Agosto = 2
+elif (((AlertasAgosto+1)*3)/4)-(dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()) == 0.5:
+    Q3Agosto = 2.5
+else:
+    Q3Agosto = 3
+
+if Alertas1 >= (((AlertasTot+1)*3)/4):
+    Q3Tot = 1
+elif ((AlertasTot+1)*3)/4-Alertas1 == 0.5:
+    Q3Tot = 1.5
+elif Alertas1+Alertas2 >= ((AlertasTot+1)*3)/4:
+    Q3Tot = 2
+elif (((AlertasTot+1)*3)/4)-(Alertas1+Alertas2) == 0.5:
+    Q3Tot = 2.5
+else:
+    Q3Tot = 3
+
+print("El cuartil 3 (Q3) de las alertas del mes de julio es la alerta de número", Q3Julio)
+print("El cuartil 3 (Q3) de las alertas del mes de agosto es la alerta de número", Q3Agosto)
+print("El cuartil 3 (Q3) de todas las alertas es la alerta número", Q3Tot)
 
 #Valores Máximos y mínimos
 print("\n")

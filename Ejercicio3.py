@@ -4,7 +4,7 @@
 import sqlite3
 import csv
 import pandas as pd
-import statistics
+
 
 #Para agrupar por prioridad de alerta y fecha
 con = sqlite3.connect('Practica1.db')

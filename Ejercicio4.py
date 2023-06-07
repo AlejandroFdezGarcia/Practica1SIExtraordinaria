@@ -3,7 +3,7 @@ import sqlite3
 import matplotlib.pyplot as plt
 import pandas as pd
 
-con = sqlite3.connect('Practica1.db')
+con = sqlite3.connect('Database.db')
 query = "SELECT origin, COUNT(*) as count FROM alertas WHERE priority = 1 GROUP BY origin ORDER BY count DESC LIMIT 10"
 df = pd.read_sql_query(query, con)
 
@@ -21,7 +21,7 @@ plt.title('Top 10 IPs de origen con mayor número de incidencias (prioridad = 1)
 plt.show()
 
 ############################### Número de alertas en el tiempo:
-conn = sqlite3.connect('Practica1.db')
+conn = sqlite3.connect('Database.db')
 query = "SELECT timestamp FROM alertas"
 df = pd.read_sql_query(query, conn)
 
@@ -40,7 +40,7 @@ plt.show()
 conn.close()
 
 ############################# Porcentaje del total del número de alertas por categoría
-conn = sqlite3.connect('Practica1.db')
+conn = sqlite3.connect('Database.db')
 query = "SELECT clasification, COUNT(*) as total FROM alertas GROUP BY clasification"
 df = pd.read_sql_query(query, conn)
 
@@ -55,7 +55,7 @@ plt.show()
 conn.close()
 
 ######################## Dispositivos más vulnerables:
-conn = sqlite3.connect('Practica1.db')
+conn = sqlite3.connect('Database.db')
 query = "SELECT origin, COUNT(*) as total FROM alertas GROUP BY origin ORDER BY total DESC"
 df = pd.read_sql_query(query, conn)
 
@@ -73,7 +73,7 @@ plt.ylabel("Número de alertas")
 plt.show()
 
 ##################################### Media de puertos abiertos:
-conn = sqlite3.connect('Practica1.db')
+conn = sqlite3.connect('Database.db')
 query = "SELECT clasification, AVG(port) as avg_port, COUNT(*) as count FROM alertas GROUP BY clasification"
 df = pd.read_sql_query(query, conn)
 

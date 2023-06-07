@@ -1,13 +1,8 @@
-# EJERCICIO 3
-#Para crear en una base de datos los datos del archivo alerts.csv
-
 import sqlite3
 import csv
 import pandas as pd
 
-
-#Para agrupar por prioridad de alerta y fecha
-con = sqlite3.connect('Practica1.db')
+con = sqlite3.connect('Database.db')
 
 query = con.execute("SELECT * FROM alertas WHERE STRFTIME('%m',timestamp) = '07' AND PRIORITY = 1")
 data_col = []

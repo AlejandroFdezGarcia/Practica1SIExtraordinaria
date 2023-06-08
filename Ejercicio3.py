@@ -1,5 +1,4 @@
 import sqlite3
-import csv
 import pandas as pd
 
 con = sqlite3.connect('Database.db')

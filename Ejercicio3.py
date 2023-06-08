@@ -1,51 +1,37 @@
-import sqlite3
 import pandas as pd
+import sqlite3
 
-con = sqlite3.connect('Database.db')
+conn = sqlite3.connect('Database.db')
 
-# Cargar los datos de la base de datos en un DataFrame
-df = pd.read_sql_query("SELECT * FROM alertas INNER JOIN dispositivos ON alertas.origin = dispositivos.ip OR alertas.destination = dispositivos.ip", con)
+df = pd.read_sql_query("SELECT * FROM alertas INNER JOIN dispositivos ON alertas.origin = dispositivos.ip OR alertas.destination = dispositivos.ip", conn)
 
-# Convertir el formato de la columna 'timestamp' a datetime
 df['timestamp'] = pd.to_datetime(df['timestamp'])
 
-# Filtrar por las alertas en julio y agosto
-df_july_august = df[(df['timestamp'].dt.month == 7) | (df['timestamp'].dt.month == 8) | (df['timestamp'].dt.month == 9)]
+df_filtered = df[(df['timestamp'].dt.month.isin([7, 8])) & (df['priority'].isin([1,2,3]))]
 
-# Agrupar por prioridad de alerta y fecha
-grouped = df_july_august.groupby(['priority', df_july_august['timestamp'].dt.month])
+vulnerabilities = df_filtered['analisis_vulnerabilidadesdetectadas']
 
-# Calcular la información requerida para la variable de vulnerabilidades detectadas
-vulnerabilities_info = grouped['analisis_vulnerabilidadesdetectadas'].agg(['count', lambda x: x.isnull().sum(), lambda x: x.mode().iloc[0], 'median', 'quantile', 'min', 'max'])
+num_observations = vulnerabilities.count()
 
-# Renombrar las columnas para mayor claridad
-vulnerabilities_info.columns = ['Número de observaciones', 'Número de valores ausentes', 'Moda', 'Mediana', 'Cuartiles', 'Valor mínimo', 'Valor máximo']
+num_missing_values = vulnerabilities.isnull().sum()
 
-print(vulnerabilities_info)
+mode = vulnerabilities.mode().values[0]
 
+median = vulnerabilities.median()
 
-num_observaciones = df.shape[0]
+q1 = vulnerabilities.quantile(0.25)
+q3 = vulnerabilities.quantile(0.75)
 
-num_valores_ausentes = df.isnull().sum().sum()
-df_sept=df[df['timestamp'].dt.month == 9]
-moda = df['analisis_vulnerabilidadesdetectadas'].mode().iloc[0]
+max_value = vulnerabilities.max()
+min_value = vulnerabilities.min()
 
-mediana = df['analisis_vulnerabilidadesdetectadas'].median()
+print("Número de observaciones:", num_observations)
+print("Número de valores ausentes:", num_missing_values)
+print("Moda:", mode)
+print("Mediana:", median)
+print("Cuartil Q1:", q1)
+print("Cuartil Q3:", q3)
+print("Valor máximo:", max_value)
+print("Valor mínimo:", min_value)
 
-q1 = df['analisis_vulnerabilidadesdetectadas'].quantile(0.25)
-q3 = df['analisis_vulnerabilidadesdetectadas'].quantile(0.75)
-
-valor_minimo = df['analisis_vulnerabilidadesdetectadas'].min()
-valor_maximo = df['analisis_vulnerabilidadesdetectadas'].max()
-
-print("El número total de observaciones es", num_observaciones)
-print("El número de valores nulos o ausentes es de", num_valores_ausentes+df_sept['timestamp'].count())
-print("La moda es", vulnerabilities_info['Moda'])
-print("La mediana es", vulnerabilities_info['Mediana'])
-print("El cuartil 1 (Q1) es", q1)
-print("El cuartil 3 (Q3) es", q3)
-print("El valor mínimo es", valor_minimo)
-print("El valor máximo es", valor_maximo)
-
-
-con.close()
+conn.close()

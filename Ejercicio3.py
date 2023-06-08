@@ -1,6 +1,9 @@
 import sqlite3
 import csv
 import pandas as pd
+import statistics
+import numpy as np
+import collections
 
 con = sqlite3.connect('Database.db')
 
@@ -66,270 +69,93 @@ for row in cursor:
 
 #Moda
 print("\n")
-if (dAlertsJul1["sid"].count() > dAlertsJul2["sid"].count()) & (dAlertsJul1["sid"].count() > dAlertsJul3["sid"].count()):
-    modaJulio = 1
-elif dAlertsJul2["sid"].count() > dAlertsJul3["sid"].count():
-    modaJulio = 2
-else:
-    modaJulio = 3
+conn = sqlite3.connect('Practica1.db')
+cursor = conn.cursor()
+cursor.execute("SELECT priority FROM alertas")
+data = cursor.fetchall()
+moda = statistics.mode(data)
+conn.close()
 
-if (dAlertsAgo1["sid"].count() > dAlertsAgo2["sid"].count()) & (dAlertsAgo1["sid"].count() > dAlertsAgo3["sid"].count()):
-    modaAgosto = 1
-elif dAlertsAgo2["sid"].count() > dAlertsAgo3["sid"].count():
-    modaAgosto = 2
-else:
-    modaAgosto = 3
-
-if ((dAlertsJul1["sid"].count()+dAlertsAgo1["sid"].count()) > (dAlertsJul2["sid"].count()+dAlertsAgo2["sid"].count())) & ((dAlertsJul1["sid"].count()+dAlertsAgo1["sid"].count()) > (dAlertsJul3["sid"].count()+dAlertsAgo3["sid"].count())):
-    modaTot = 1
-elif (dAlertsJul2["sid"].count()+dAlertsAgo2["sid"].count()) > (dAlertsJul3["sid"].count()+dAlertsAgo3["sid"].count()):
-    modaTot = 2
-else:
-    modaTot = 3
-
-
-print("La moda de la prioridad de las alertas en julio es", modaJulio)
-print("La moda de la prioridad de las alertas en agosto es", modaAgosto)
-print("La moda de la prioridad de todas las alertas es", modaTot)
+print("La moda es", moda[0])
 
 #Mediana
 print("\n")
-Alertas1 = (dAlertsJul1["sid"].count()+dAlertsAgo1["sid"].count())
-Alertas2 = (dAlertsJul2["sid"].count()+dAlertsAgo2["sid"].count())
-Alertas3 = (dAlertsJul3["sid"].count()+dAlertsAgo3["sid"].count())
-AlertasJulio = dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()+dAlertsJul3["sid"].count()
-AlertasAgosto = dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()+dAlertsAgo3["sid"].count()
-AlertasTot = Alertas1+Alertas2+Alertas3
+conn = sqlite3.connect('Practica1.db')
+cursor = conn.cursor()
+cursor.execute("SELECT priority FROM alertas")
+data = cursor.fetchall()
+mediana = statistics.median(data)
+conn.close()
 
-if dAlertsJul1["sid"].count() >= ((AlertasJulio+1)/2):
-    medianaJulio = 1
-elif ((AlertasJulio+1)/2)-dAlertsJul1["sid"].count() == 0.5:
-    medianaJulio = 1.5
-elif dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count() >= ((AlertasJulio+1)/2):
-    medianaJulio = 2
-elif ((AlertasJulio+1)/2)-(dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()) == 0.5:
-    medianaJulio = 2.5
-else:
-    medianaJulio = 3
-
-if dAlertsAgo1["sid"].count() >= ((AlertasAgosto+1)/2):
-    medianaAgosto = 1
-elif ((AlertasAgosto+1)/2)-dAlertsAgo1["sid"].count() == 0.5:
-    medianaAgosto = 1.5
-elif dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count() >= ((AlertasAgosto+1)/2):
-    medianaAgosto = 2
-elif ((AlertasAgosto+1)/2)-(dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()) == 0.5:
-    medianaAgosto = 2.5
-else:
-    medianaAgosto = 3
-
-if Alertas1 >= ((AlertasTot+1)/2):
-    medianaTot = 1
-elif ((AlertasTot+1)/2)-Alertas1 == 0.5:
-    medianaTot = 1.5
-elif Alertas1+Alertas2 >= ((AlertasTot+1)/2):
-    medianaTot = 2
-elif ((AlertasTot+1)/2)-(Alertas1+Alertas2) == 0.5:
-    medianaTot = 2.5
-else:
-    medianaTot = 3
-
-print("La mediana de las alertas del mes de julio es la alerta de número", medianaJulio)
-print("La mediana de las alertas del mes de agosto es la alerta de número", medianaAgosto)
-print("La mediana de todas las alertas es la alerta número", medianaTot)
-
+print("La mediana es", mediana[0])
 
 #Cuartiles Q1 y Q3
 print("\n")
-Alertas1 = (dAlertsJul1["sid"].count()+dAlertsAgo1["sid"].count())
-Alertas2 = (dAlertsJul2["sid"].count()+dAlertsAgo2["sid"].count())
-Alertas3 = (dAlertsJul3["sid"].count()+dAlertsAgo3["sid"].count())
-AlertasJulio = dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()+dAlertsJul3["sid"].count()
-AlertasAgosto = dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()+dAlertsAgo3["sid"].count()
-AlertasTot = Alertas1+Alertas2+Alertas3
+conn = sqlite3.connect('Practica1.db')
+cursor = conn.cursor()
+cursor.execute("SELECT priority FROM alertas")
+data = cursor.fetchall()
+data_array = np.array(data)
+q1 = np.percentile(data_array, 25)
+q3 = np.percentile(data_array, 75)
+conn.close()
 
-if dAlertsJul1["sid"].count() >= ((AlertasJulio+1)/4):
-    Q1Julio = 1
-elif ((AlertasJulio+1)/4)-dAlertsJul1["sid"].count() == 0.5:
-    Q1Julio = 1.5
-elif dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count() >= ((AlertasJulio+1)/4):
-    Q1Julio = 2
-elif ((AlertasJulio+1)/4)-(dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()) == 0.5:
-    Q1Julio = 2.5
-else:
-    Q1Julio = 3
-
-if dAlertsAgo1["sid"].count() >= ((AlertasAgosto+1)/4):
-    Q1Agosto = 1
-elif ((AlertasAgosto+1)/4)-dAlertsAgo1["sid"].count() == 0.5:
-    Q1Agosto = 1.5
-elif dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count() >= ((AlertasAgosto+1)/4):
-    Q1Agosto = 2
-elif ((AlertasAgosto+1)/4)-(dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()) == 0.5:
-    Q1Agosto = 2.5
-else:
-    Q1Agosto = 3
-
-if Alertas1 >= ((AlertasTot+1)/4):
-    Q1Tot = 1
-elif ((AlertasTot+1)/4)-Alertas1 == 0.5:
-    Q1Tot = 1.5
-elif Alertas1+Alertas2 >= ((AlertasTot+1)/4):
-    Q1Tot = 2
-elif ((AlertasTot+1)/4)-(Alertas1+Alertas2) == 0.5:
-    Q1Tot = 2.5
-else:
-    Q1Tot = 3
-
-print("El cuartil 1 (Q1) de las alertas del mes de julio es la alerta de número", Q1Julio)
-print("El cuartil 1 (Q1) de las alertas del mes de agosto es la alerta de número", Q1Agosto)
-print("El cuartil 1 (Q1) de todas las alertas es la alerta número", Q1Tot)
-
-if dAlertsJul1["sid"].count() >= (((AlertasJulio+1)*3)/4):
-    Q3Julio = 1
-elif (((AlertasJulio+1)*3)/4)-dAlertsJul1["sid"].count() == 0.5:
-    Q3Julio = 1.5
-elif dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count() >= (((AlertasJulio+1)*3)/4):
-    Q3Julio = 2
-elif (((AlertasJulio+1)*3)/4)-(dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()) == 0.5:
-    Q3Julio = 2.5
-else:
-    Q3Julio = 3
-
-if dAlertsAgo1["sid"].count() >= (((AlertasAgosto+1)*3)/4):
-    Q3Agosto = 1
-elif (((AlertasAgosto+1)*3)/4)-dAlertsAgo1["sid"].count() == 0.5:
-    Q3Agosto = 1.5
-elif dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count() >= (((AlertasAgosto+1)*3)/4):
-    Q3Agosto = 2
-elif (((AlertasAgosto+1)*3)/4)-(dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()) == 0.5:
-    Q3Agosto = 2.5
-else:
-    Q3Agosto = 3
-
-if Alertas1 >= (((AlertasTot+1)*3)/4):
-    Q3Tot = 1
-elif ((AlertasTot+1)*3)/4-Alertas1 == 0.5:
-    Q3Tot = 1.5
-elif Alertas1+Alertas2 >= ((AlertasTot+1)*3)/4:
-    Q3Tot = 2
-elif (((AlertasTot+1)*3)/4)-(Alertas1+Alertas2) == 0.5:
-    Q3Tot = 2.5
-else:
-    Q3Tot = 3
-
-print("El cuartil 3 (Q3) de las alertas del mes de julio es la alerta de número", Q3Julio)
-print("El cuartil 3 (Q3) de las alertas del mes de agosto es la alerta de número", Q3Agosto)
-print("El cuartil 3 (Q3) de todas las alertas es la alerta número", Q3Tot)
+print("El primer cuartil (Q1) es", q1)
+print("El tercer cuartil (Q3) es", q3)
 
 #Valores Máximos y mínimos
 print("\n")
-valorMinJulio = 0
-valorMaxJulio = 0
-valorMinAgosto = 0
-valorMaxAgosto = 0
+conn = sqlite3.connect('Practica1.db')
+cursor = conn.cursor()
 
-if dAlertsJul1["sid"].count() < (dAlertsJul2["sid"].count()) & (dAlertsJul1["sid"].count() < (dAlertsJul3["sid"].count())):
-    valorMinJulio = dAlertsJul1["sid"].count()
-elif dAlertsJul2["sid"].count() < dAlertsJul3["sid"].count():
-    valorMinJulio = dAlertsJul2["sid"].count()
-else:
-    valorMinJulio = dAlertsJul3["sid"].count()
+# Obtención del valor máximo y mínimo
+conn = sqlite3.connect('Practica1.db')
+cursor = conn.cursor()
 
-if dAlertsJul1["sid"].count() > (dAlertsJul2["sid"].count()) & (dAlertsJul1["sid"].count() > (dAlertsJul3["sid"].count())):
-    valorMaxJulio = dAlertsJul1["sid"].count()
-elif dAlertsJul2["sid"].count() > dAlertsJul3["sid"].count():
-    valorMaxJulio = dAlertsJul2["sid"].count()
-else:
-    valorMaxJulio = dAlertsJul3["sid"].count()
+# Consulta para obtener los valores máximos y mínimos por mes y prioridad
+cursor.execute("""
+    SELECT strftime('%Y-%m', timestamp) AS mes, priority, MAX(priority) AS max_value, MIN(priority) AS min_value
+    FROM alertas
+    GROUP BY mes, priority
+""")
+results = cursor.fetchall()
 
-if dAlertsAgo1["sid"].count() < (dAlertsAgo2["sid"].count()) & (dAlertsAgo1["sid"].count() < (dAlertsAgo3["sid"].count())):
-    valorMinAgosto = dAlertsAgo1["sid"].count()
-elif dAlertsAgo2["sid"].count() < dAlertsAgo3["sid"].count():
-    valorMinAgosto = dAlertsAgo2["sid"].count()
-else:
-    valorMinAgosto = dAlertsAgo3["sid"].count()
+# Cálculo de los valores máximos y mínimos por prioridad y mes
+conn = sqlite3.connect('Practica1.db')
+cursor = conn.cursor()
 
-if dAlertsAgo1["sid"].count() > (dAlertsAgo2["sid"].count()) & (dAlertsAgo1["sid"].count() > (dAlertsAgo3["sid"].count())):
-    valorMaxAgosto = dAlertsAgo1["sid"].count()
-elif dAlertsAgo2["sid"].count() > dAlertsAgo3["sid"].count():
-    valorMaxAgosto = dAlertsAgo2["sid"].count()
-else:
-    valorMaxAgosto = dAlertsAgo3["sid"].count()
+# Consulta para obtener los valores mínimos y máximos por mes y prioridad
+cursor.execute("""
+    SELECT strftime('%Y-%m', timestamp) AS mes, priority, COUNT(*) AS cantidad
+    FROM alertas
+    WHERE mes IN ('2022-07', '2022-08')
+    GROUP BY mes, priority
+""")
+results = cursor.fetchall()
 
-valorMin1 = 0
-valorMax1 = 0
-valorMin2 = 0
-valorMax2 = 0
-valorMin3 = 0
-valorMax3 = 0
+valoresMax = collections.defaultdict(lambda: (0, ''))
+valoresMin = collections.defaultdict(lambda: (float('inf'), ''))
+for mes, priority, cantidad in results:
+    if cantidad > valoresMax[priority][0]:
+        valoresMax[priority] = (cantidad, mes)
+    if cantidad < valoresMin[priority][0]:
+        valoresMin[priority] = (cantidad, mes)
 
-mesMin1 = ""
-mesMax1 = ""
-mesMin2 = ""
-mesMax2 = ""
-mesMin3 = ""
-mesMax3 = ""
+alertasTotales = collections.defaultdict(int)
+for mes, priority, cantidad in results:
+    alertasTotales[mes] += cantidad
 
-if dAlertsJul1["sid"].count() < dAlertsAgo1["sid"].count():
-    valorMin1 = dAlertsJul1["sid"].count()
-    valorMax1 = dAlertsAgo1["sid"].count()
-    mesMin1 = "julio"
-    mesMax1 = "agosto"
-else:
-    valorMin1 = dAlertsAgo1["sid"].count()
-    valorMax1 = dAlertsJul1["sid"].count()
-    mesMin1 = "agosto"
-    mesMax1 = "julio"
+mesMaxTotal = max(alertasTotales, key=alertasTotales.get)
+mesMinTotal = min(alertasTotales, key=alertasTotales.get)
+conn.close()
+for priority in sorted(valoresMin):
+    min_value, mesMin = valoresMin[priority]
+    max_value, mesMax = valoresMax[priority]
+    print(f"El valor mínimo de alertas de prioridad {priority} ha sido de {min_value}, en el mes de {mesMin}")
+    print(f"El valor máximo de alertas de prioridad {priority} ha sido de {max_value}, en el mes de {mesMax}")
+    print()
 
-if dAlertsJul2["sid"].count() < dAlertsAgo2["sid"].count():
-    valorMin2 = dAlertsJul2["sid"].count()
-    valorMax2 = dAlertsAgo2["sid"].count()
-    mesMin2 = "julio"
-    mesMax2 = "agosto"
-else:
-    valorMin2 = dAlertsAgo2["sid"].count()
-    valorMax2 = dAlertsJul2["sid"].count()
-    mesMin2 = "agosto"
-    mesMax2 = "julio"
-
-if dAlertsJul3["sid"].count() < dAlertsAgo3["sid"].count():
-    valorMin3 = dAlertsJul3["sid"].count()
-    valorMax3 = dAlertsAgo3["sid"].count()
-    mesMin3 = "julio"
-    mesMax3 = "agosto"
-else:
-    valorMin3 = dAlertsAgo3["sid"].count()
-    valorMax3 = dAlertsJul3["sid"].count()
-    mesMin3 = "agosto"
-    mesMax3 = "julio"
-
-valorMinTotal = 0
-valorMaxTotal = 0
-
-mesMinTotal = ""
-mesMaxTotal = ""
-
-if dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()+dAlertsJul3["sid"].count() < dAlertsAgo1["sid"].count()+dAlertsAgo2["sid"].count()+dAlertsAgo3["sid"].count():
-    valorMinTotal = dAlertsJul1["sid"].count()+dAlertsJul2["sid"].count()+dAlertsJul3["sid"].count()
-    valorMaxTotal = dAlertsAgo1["sid"].count() + dAlertsAgo2["sid"].count() + dAlertsAgo3["sid"].count()
-    mesMinTotal = "julio"
-    mesMaxTotal = "agosto"
-else:
-    valorMaxTotal = dAlertsJul1["sid"].count() + dAlertsJul2["sid"].count() + dAlertsJul3["sid"].count()
-    valorMinTotal = dAlertsAgo1["sid"].count() + dAlertsAgo2["sid"].count() + dAlertsAgo3["sid"].count()
-    mesMinTotal = "agosto"
-    mesMaxTotal = "julio"
-
-print("El valor mínimo de alertas de prioridad 1 ha sido de", valorMin1, ", en el mes de", mesMin1)
-print("El valor máximo de alertas de prioridad 1 ha sido de", valorMax1, ", en el mes de", mesMax1)
-print("El valor mínimo de alertas de prioridad 2 ha sido de", valorMin2, ", en el mes de", mesMin2)
-print("El valor máximo de alertas de prioridad 2 ha sido de", valorMax2, ", en el mes de", mesMax2)
-print("El valor mínimo de alertas de prioridad 3 ha sido de", valorMin3, ", en el mes de", mesMin3)
-print("El valor máximo de alertas de prioridad 3 ha sido de", valorMax3, ", en el mes de", mesMax3)
-
-print("El valor mínimo de alertas totales ha sido de", valorMinTotal, ", en el mes de", mesMinTotal)
-print("El valor máximo de alertas totales ha sido de", valorMaxTotal, ", en el mes de", mesMaxTotal)
-
+print(f"El mes con más alertas totales es {mesMaxTotal} con {alertasTotales[mesMaxTotal]} alertas")
+print(f"El mes con menos alertas totales es {mesMinTotal} con {alertasTotales[mesMinTotal]} alertas")
 
 con.close()

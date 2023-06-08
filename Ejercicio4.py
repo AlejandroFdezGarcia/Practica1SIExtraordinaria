@@ -1,96 +1,62 @@
-###################################### Para seleccionar las IP de origen más problemáticas y representarlas:
-import sqlite3
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
+import sqlite3
 
-con = sqlite3.connect('Database.db')
-query = "SELECT origin, COUNT(*) as count FROM alertas WHERE priority = 1 GROUP BY origin ORDER BY count DESC LIMIT 10"
-df = pd.read_sql_query(query, con)
+conn = sqlite3.connect('Database.db')
 
-con.close()
+df_alertas = pd.read_sql_query("SELECT * FROM alertas", conn)
+df_dispositivos = pd.read_sql_query("SELECT * FROM dispositivos", conn)
 
-ips = df['origin']
-counts = df['count']
+conn.close()
 
-plt.figure(figsize=(15, 6))
-plt.bar(ips, counts)
-plt.xlabel('IPs de origen')
-plt.ylabel('Número de incidencias')
-plt.title('Top 10 IPs de origen con mayor número de incidencias (prioridad = 1)')
-
+# 10 IP de origen más problemáticas
+fig1, ax1 = plt.subplots(figsize=(7, 12))  # Ancho: 8 pulgadas, Alto: 6 pulgadas
+ip_problematicas = df_alertas[df_alertas['priority'] == 1]['origin'].value_counts().nlargest(10)
+ip_problematicas.plot(kind='bar', ax=ax1)
+plt.title('Top 10 IP de origen más problemáticas')
+plt.xlabel('IP de origen')
+plt.ylabel('Número de alertas')
 plt.show()
 
-############################### Número de alertas en el tiempo:
-conn = sqlite3.connect('Database.db')
-query = "SELECT timestamp FROM alertas"
-df = pd.read_sql_query(query, conn)
-
-df['timestamp'] = pd.to_datetime(df['timestamp'])
-
-df['count'] = 1
-
-alerts_per_day = df.groupby(df['timestamp'].dt.date)['count'].sum()
-
-alerts_per_day.plot(kind='bar', figsize=(10, 12))
+# Número de alertas en el tiempo
+fig2, ax2 = plt.subplots(figsize=(10, 10))  # Ancho: 10 pulgadas, Alto: 6 pulgadas
+df_alertas['timestamp'] = pd.to_datetime(df_alertas['timestamp'])
+df_alertas['fecha'] = df_alertas['timestamp'].dt.date
+df_alertas['fecha'].value_counts().sort_index().plot(kind='bar', ax=ax2)
+plt.title('Número de alertas en el tiempo')
 plt.xlabel('Fecha')
 plt.ylabel('Número de alertas')
-plt.title('Número de alertas en el tiempo (por día)')
-plt.show()
-
-conn.close()
-
-############################# Porcentaje del total del número de alertas por categoría
-conn = sqlite3.connect('Database.db')
-query = "SELECT clasification, COUNT(*) as total FROM alertas GROUP BY clasification"
-df = pd.read_sql_query(query, conn)
-
-df['percentage'] = df['total'] / df['total'].sum() * 100
-
-plt.figure(figsize=(15, 15))
-plt.pie(df['percentage'], labels=df['clasification'], autopct='%1.1f%%')
-plt.title('Porcentaje del total de alertas por categoría')
-plt.axis('equal')
-plt.show()
-
-conn.close()
-
-######################## Dispositivos más vulnerables:
-conn = sqlite3.connect('Database.db')
-query = "SELECT origin, COUNT(*) as total FROM alertas GROUP BY origin ORDER BY total DESC"
-df = pd.read_sql_query(query, conn)
-
-conn.close()
-
-num_devices = 10
-x_labels = df['origin'].head(num_devices)
-y_values = df['total'].head(num_devices)
-
-plt.figure(figsize=(15, 6))
-plt.bar(x_labels, y_values)
-plt.title(f"Top {num_devices} dispositivos más vulnerables")
-plt.xlabel("Dispositivo")
-plt.ylabel("Número de alertas")
-plt.show()
-
-##################################### Media de puertos abiertos:
-conn = sqlite3.connect('Database.db')
-query = "SELECT clasification, AVG(port) as avg_port, COUNT(*) as count FROM alertas GROUP BY clasification"
-df = pd.read_sql_query(query, conn)
-
-clasifications = df['clasification']
-avg_ports = df['avg_port']
-total_services = df['count']
-insecure_services = pd.Series([0] * len(df))
-
-fig, ax = plt.subplots(figsize=(8, 22))
-ax.bar(clasifications, avg_ports, label='Media de puertos abiertos')
-ax.plot(clasifications, total_services, label='Total de servicios detectados', color='red')
-ax.plot(clasifications, insecure_services, label='Servicios inseguros', color='orange')
-ax.legend()
-ax.set_xlabel('Clasificación')
-ax.set_ylabel('Puertos')
-ax.set_title('Media de puertos abiertos por clasificación de vulnerabilidad')
 plt.xticks(rotation=90)
 plt.show()
 
-conn.close()
+# Porcentaje del total del número de alertas por categoría )
+fig3, ax3 = plt.subplots(figsize=(15, 15))  # Ancho: 8 pulgadas, Alto: 8 pulgadas
+porcentaje_categorias = df_alertas['clasification'].value_counts(normalize=True) * 100
+porcentaje_categorias.plot(kind='pie', autopct='%1.1f%%', ax=ax3)
+plt.title('Porcentaje de alertas por categoría')
+plt.ylabel('')
+plt.axis('equal')
+plt.show()
+
+# Dispositivos más vulnerables
+fig4, ax4 = plt.subplots(figsize=(8, 10))  # Ancho: 10 pulgadas, Alto: 6 pulgadas
+df_dispositivos['vulnerabilidades_totales'] = df_dispositivos['analisis_serviciosinseguros'] + df_dispositivos['analisis_vulnerabilidadesdetectadas']
+dispositivos_vulnerables = df_dispositivos[['ip', 'vulnerabilidades_totales']].sort_values(by='vulnerabilidades_totales', ascending=False).head(10)
+dispositivos_vulnerables.plot(x='ip', y='vulnerabilidades_totales', kind='bar', ax=ax4)
+plt.title('Dispositivos más vulnerables')
+plt.xlabel('IP del dispositivo')
+plt.ylabel('Suma de servicios vulnerables y vulnerabilidades detectadas')
+plt.show()
+
+# Media de puertos abiertos frente a servicios inseguros y frente al total de servicios detectados
+fig5, ax5 = plt.subplots(figsize=(8, 6))  # Ancho: 8 pulgadas, Alto: 6 pulgadas
+df_dispositivos['media_puertos_abiertos'] = df_dispositivos['analisis_puertosabiertos'].apply(lambda x: len(eval(x)) if x != 'None' else 0)
+media_puertos_abiertos = df_dispositivos['media_puertos_abiertos'].mean()
+media_servicios_inseguros = df_dispositivos['analisis_serviciosinseguros'].mean()
+media_total_servicios = df_dispositivos['analisis_servicios'].mean()
+datos = [media_puertos_abiertos, media_servicios_inseguros, media_total_servicios]
+etiquetas = ['Media de puertos abiertos', 'Media de servicios inseguros', 'Media del total de servicios']
+ax5.bar(etiquetas, datos)
+plt.title('Comparación de medias')
+plt.ylabel('Cantidad')
+plt.show()
